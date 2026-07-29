@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@layer base {
+  /* Resets para evitar conflitos com html2canvas e oklch */
+  .printable-content,
+  .printable-content * {
+    color-scheme: light !important;
+  }
+
+  @media print {
+    @page {
+      size: A4;
+      margin-top: 3cm;
+      margin-left: 3cm;
+      margin-bottom: 2cm;
+      margin-right: 2cm;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: auto !important;
+    }
+
+    #root {
+      min-height: auto !important;
+      display: block !important;
+    }
+
+    /* Ocultar elementos da interface web */
+    .no-print,
+    nav,
+    header,
+    button,
+    .modal-overlay,
+    main,
+    footer {
+      display: none !important;
+    }
+
+    /* Forçar exibição do conteúdo de impressão */
+    .printable-content {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      position: relative !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      z-index: 9999;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .avoid-break {
+      break-inside: avoid;
+    }
+
+    /* Ajustar tabelas para impressão */
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+    }
+
+    th, td {
+      border: 1px solid #e2e8f0 !important;
+      padding: 8px !important;
+    }
+
+    /* Gráficos em impressão */
+    .recharts-responsive-container {
+      width: 100% !important;
+      height: 300px !important;
+    }
+  }
+}

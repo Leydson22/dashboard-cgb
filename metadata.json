@@ -1,0 +1,8 @@
+{
+  "name": "Remix Dashboard CGB - Aeroporto de Cuiabá",
+  "description": "Dashboard executivo e operacional para monitoramento de movimentações de aeronaves e taxa de desembarque híbrido no Aeroporto Internacional de Cuiabá (CGB).",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
