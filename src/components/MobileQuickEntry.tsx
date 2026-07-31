@@ -41,6 +41,7 @@ export const MobileQuickEntry: React.FC<MobileQuickEntryProps> = ({
   const [matricula, setMatricula] = useState<string>('');
   const [selectedModelo, setSelectedModelo] = useState<string>('');
   const [modelos, setModelos] = useState<string[]>(() => getAircraftModels());
+  const [managementMode, setManagementMode] = useState<'select' | 'edit' | 'delete'>('select');
   const [desembarqueHibrido, setDesembarqueHibrido] = useState<DesembarqueHibrido>('Não');
   const [registeredModal, setRegisteredModal] = useState<{
     matricula: string;
@@ -74,8 +75,23 @@ export const MobileQuickEntry: React.FC<MobileQuickEntryProps> = ({
   };
 
   const handleSelectModelo = (mod: string) => {
-    setSelectedModelo(mod);
-    setTimeout(() => setCurrentStep(5), 150);
+    if (managementMode === 'edit') {
+      const newName = window.prompt(`Editar modelo "${mod}" para:`, mod);
+      if (newName && newName.trim() && newName !== mod) {
+        const updated = editAircraftModel(mod, newName.trim());
+        setModelos(updated);
+      }
+      setManagementMode('select');
+    } else if (managementMode === 'delete') {
+      if (window.confirm(`Deseja realmente excluir o modelo "${mod}" da lista?`)) {
+        const updated = deleteAircraftModel(mod);
+        setModelos(updated);
+      }
+      setManagementMode('select');
+    } else {
+      setSelectedModelo(mod);
+      setTimeout(() => setCurrentStep(5), 150);
+    }
   };
 
   const handleAddNewModel = () => {
@@ -84,26 +100,12 @@ export const MobileQuickEntry: React.FC<MobileQuickEntryProps> = ({
       const updated = addAircraftModel(newModel.trim());
       setModelos(updated);
       setSelectedModelo(newModel.trim());
+      setManagementMode('select');
     }
   };
 
-  const handleDeleteModel = (e: React.MouseEvent, mod: string) => {
-    e.stopPropagation();
-    if (window.confirm(`Deseja realmente excluir o modelo "${mod}" da lista?`)) {
-      const updated = deleteAircraftModel(mod);
-      setModelos(updated);
-      if (selectedModelo === mod) setSelectedModelo('');
-    }
-  };
-
-  const handleEditModel = (e: React.MouseEvent, mod: string) => {
-    e.stopPropagation();
-    const newName = window.prompt(`Editar modelo "${mod}" para:`, mod);
-    if (newName && newName.trim() && newName !== mod) {
-      const updated = editAircraftModel(mod, newName.trim());
-      setModelos(updated);
-      if (selectedModelo === mod) setSelectedModelo(newName.trim());
-    }
+  const toggleManagementMode = (mode: 'edit' | 'delete') => {
+    setManagementMode(prev => prev === mode ? 'select' : mode);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -164,11 +166,11 @@ export const MobileQuickEntry: React.FC<MobileQuickEntryProps> = ({
     companhias.find((c) => String(c.id_companhia) === String(selectedCompanhiaId)) || companhias[0];
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-50 animate-in fade-in duration-150 w-full h-full overflow-hidden box-border">
+    <div className="flex-1 flex flex-col bg-slate-50 w-full h-full overflow-hidden box-border">
       {/* Post-Registration Choice Modal */}
       {registeredModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl border-2 border-emerald-500 space-y-3 sm:space-y-4 animate-in zoom-in-95 duration-150 overflow-y-auto max-h-[95vh]">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[2000] flex items-center justify-center p-0 m-0 w-screen h-screen left-0 top-0">
+          <div className="bg-white rounded-[32px] p-6 w-[calc(100%-3rem)] max-w-[340px] shadow-2xl border-2 border-emerald-500/30 space-y-5 animate-in zoom-in-95 duration-200 overflow-y-auto max-h-[85vh] mx-auto">
             <div className="text-center space-y-1 sm:space-y-2">
               <div className="w-12 h-14 sm:w-14 sm:h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
                 <CheckCircle2 className="w-8 h-8 sm:w-9 sm:h-9" />
@@ -211,14 +213,14 @@ export const MobileQuickEntry: React.FC<MobileQuickEntryProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button onClick={handleRegisterAnother} className="w-full py-3 bg-sky-900 text-white font-black text-xs rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all">
-                <PlusCircle className="w-4 h-4 text-amber-300" />
+            <div className="grid grid-cols-1 gap-3">
+              <button onClick={handleRegisterAnother} className="w-full py-4 bg-sky-900 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg active:bg-sky-950">
+                <PlusCircle className="w-5 h-5 text-amber-300" />
                 Novo Pouso
               </button>
-              <button onClick={handleCloseAndGoHome} className="w-full py-3 bg-slate-200 text-slate-800 font-black text-xs rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all">
-                <X className="w-4 h-4 text-rose-600" />
-                Início
+              <button onClick={handleCloseAndGoHome} className="w-full py-4 bg-slate-100 text-slate-500 font-black text-xs rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all border border-slate-200 active:bg-slate-200">
+                <X className="w-4 h-4 text-rose-500" />
+                Voltar ao Início
               </button>
             </div>
           </div>
@@ -304,38 +306,74 @@ export const MobileQuickEntry: React.FC<MobileQuickEntryProps> = ({
 
         {/* STEP 4: MODELO / EQUIPAMENTO (NEW) */}
         {currentStep === 4 && (
-          <div className="space-y-4 animate-in fade-in duration-150">
-            <div className="flex justify-between items-center bg-white p-4 rounded-2xl border-2 border-slate-100 shadow-xs">
+          <div className="space-y-5 animate-in fade-in duration-200">
+            <div className="flex justify-between items-center bg-white p-4 rounded-[24px] border-2 border-slate-100 shadow-xs">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-sky-900 text-white flex items-center justify-center font-black text-sm">4</div>
+                <div className="w-9 h-9 rounded-xl bg-sky-900 text-white flex items-center justify-center font-black text-base">4</div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-black text-slate-900 uppercase">Equipamento (Opcional)</h4>
-                  <p className="text-[10px] sm:text-xs text-slate-500">Escolha o modelo da aeronave</p>
+                  <h4 className="text-sm font-black text-slate-900 uppercase">Equipamento</h4>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Gerenciar ou Selecionar</p>
                 </div>
               </div>
-              <PlusCircle className="w-5 h-5 text-sky-800" />
+
+              {/* Management Actions Top Bar - Clearer UI */}
+              <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={handleAddNewModel}
+                  className="p-2.5 bg-white text-emerald-600 rounded-xl hover:bg-emerald-50 border border-slate-200 shadow-xs active:scale-90 transition-transform"
+                  title="Novo Modelo"
+                >
+                  <Plus className="w-5 h-5 stroke-[3]" />
+                </button>
+                <div className="w-[1px] h-6 bg-slate-300 mx-0.5"></div>
+                <button
+                  type="button"
+                  onClick={() => toggleManagementMode('edit')}
+                  className={`p-2.5 rounded-xl transition-all ${managementMode === 'edit' ? 'bg-amber-500 text-white shadow-md scale-105' : 'bg-white text-amber-600 border border-slate-200'}`}
+                  title="Editar Modelo"
+                >
+                  <Edit2 className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleManagementMode('delete')}
+                  className={`p-2.5 rounded-xl transition-all ${managementMode === 'delete' ? 'bg-rose-600 text-white shadow-md scale-105' : 'bg-white text-rose-600 border border-slate-200'}`}
+                  title="Excluir Modelo"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 p-3 bg-white rounded-3xl border-2 border-slate-50 max-h-[350px] overflow-y-auto shadow-inner">
+            {/* Mode Banner Indicator */}
+            {managementMode !== 'select' && (
+              <div className={`px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest text-center animate-pulse shadow-sm border-2 ${managementMode === 'edit' ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-rose-50 text-rose-800 border-rose-300'}`}>
+                {managementMode === 'edit' ? '✏️ Modo Edição: Toque em um modelo' : '🗑️ Modo Exclusão: Toque em um modelo'}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3 p-1 max-h-[420px] overflow-y-auto scrollbar-none">
               {modelos.map((mod) => (
-                <div key={mod} className="relative group">
-                  <button type="button" onClick={() => handleSelectModelo(mod)} className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${selectedModelo === mod ? 'bg-sky-700 text-amber-300 shadow-md ring-4 ring-sky-100' : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-white'}`}>
-                    {mod}
-                  </button>
-                  <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button type="button" onClick={(e) => handleEditModel(e, mod)} className="p-1 bg-amber-400 text-white rounded-full shadow-sm"><Edit2 className="w-2.5 h-2.5" /></button>
-                    <button type="button" onClick={(e) => handleDeleteModel(e, mod)} className="p-1 bg-rose-500 text-white rounded-full shadow-sm"><Trash2 className="w-2.5 h-2.5" /></button>
-                  </div>
-                </div>
+                <button
+                  key={mod}
+                  type="button"
+                  onClick={() => handleSelectModelo(mod)}
+                  className={`px-4 py-5 rounded-[20px] text-xs sm:text-sm font-black transition-all flex items-center justify-center text-center shadow-sm border-2 leading-tight ${
+                    managementMode === 'edit' ? 'border-amber-400 bg-amber-50/50 text-amber-900 ring-4 ring-amber-100' :
+                    managementMode === 'delete' ? 'border-rose-400 bg-rose-50/50 text-rose-900 ring-4 ring-rose-100' :
+                    selectedModelo === mod ? 'border-sky-600 bg-sky-800 text-white shadow-lg ring-4 ring-sky-100' :
+                    'bg-white text-slate-700 border-slate-100 hover:border-sky-200 active:bg-sky-50'
+                  }`}
+                >
+                  {mod}
+                </button>
               ))}
-              <button type="button" onClick={handleAddNewModel} className="px-4 py-2.5 rounded-xl text-xs font-black border-2 border-dashed border-sky-300 text-sky-600 flex items-center gap-2 hover:bg-sky-50 transition-all">
-                <Plus className="w-4 h-4" /> Adicionar Novo
-              </button>
             </div>
 
-            <div className="flex gap-3">
-              <button type="button" onClick={() => setCurrentStep(3)} className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-700 font-black text-xs rounded-2xl flex items-center justify-center gap-1 uppercase tracking-widest"><ChevronLeft className="w-4 h-4" /> Voltar</button>
-              <button type="button" onClick={() => setCurrentStep(5)} className="flex-1 py-4 bg-sky-900 text-white font-black text-xs rounded-2xl shadow-lg flex items-center justify-center gap-1.5 uppercase tracking-widest">Pular / Próximo <ChevronRight className="w-4 h-4 text-amber-300" /></button>
+            <div className="flex gap-4 pt-2">
+              <button type="button" onClick={() => { setManagementMode('select'); setCurrentStep(3); }} className="flex-1 py-4.5 bg-white border-2 border-slate-200 text-slate-700 font-black text-xs rounded-2xl flex items-center justify-center gap-1 uppercase tracking-widest active:bg-slate-50 transition-colors">VOLTAR</button>
+              <button type="button" onClick={() => { setManagementMode('select'); setCurrentStep(5); }} className="flex-[1.5] py-4.5 bg-sky-900 text-white font-black text-xs rounded-2xl shadow-xl flex items-center justify-center gap-2 uppercase tracking-widest active:bg-sky-950 transition-all">Pular / Próximo <ChevronRight className="w-5 h-5 text-amber-400" /></button>
             </div>
           </div>
         )}

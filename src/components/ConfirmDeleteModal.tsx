@@ -27,9 +27,9 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 z-50 animate-in fade-in duration-150">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-0 m-0 z-[2000] animate-in fade-in duration-200 w-screen h-screen left-0 top-0">
       <div
-        className="bg-white rounded-2xl max-w-md w-full border-2 border-rose-100 shadow-2xl overflow-hidden transform transition-all"
+        className="bg-white rounded-[32px] max-w-[340px] w-[90%] border-2 border-rose-100 shadow-2xl overflow-hidden transform transition-all mx-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Banner */}
@@ -106,25 +106,24 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-2.5 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs rounded-xl border border-slate-300 transition-colors cursor-pointer"
-            >
-              Cancelar
-            </button>
-
+          <div className="grid grid-cols-1 gap-3 pt-2">
             <button
               type="button"
               onClick={() => {
                 onConfirm(record.id_registro);
                 onClose();
               }}
-              className="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              className="py-4 px-4 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-black text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 uppercase tracking-widest"
             >
-              <Trash2 className="w-4 h-4" />
-              <span>Sim, Excluir</span>
+              <Trash2 className="w-5 h-5" />
+              <span>Confirmar Exclusão</span>
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="py-3.5 px-4 bg-slate-100 text-slate-500 font-black text-xs rounded-2xl border border-slate-200 transition-colors cursor-pointer active:bg-slate-200"
+            >
+              Manter Registro
             </button>
           </div>
         </div>

@@ -1,0 +1,341 @@
+import React, { useRef, useState, useEffect } from 'react';
+import {
+  Database, Download, Upload, Trash2, AlertTriangle, ShieldCheck,
+  FileJson, X, ShieldAlert, CheckCircle2, RefreshCw, Clock,
+  History, Settings2, ShieldQuestion, Trash, CloudDownload, CloudUpload,
+  FileText, Share2, Info, PlusCircle, Edit2
+} from 'lucide-react';
+import {
+  generateBackup, restoreBackup, clearAllData, clearLogs,
+  clearMovimentacoes, getDatabaseStats, listInternalSnapshots,
+  saveInternalSnapshot, restoreFromSnapshot, deleteSnapshot,
+  SnapshotMetadata, BackupConfig
+} from '../services/dataManagementService';
+
+interface DataManagementPanelProps {
+  onDataRestored: () => void;
+}
+
+type MaintenanceAction = 'CLEAR_MOV' | 'CLEAR_LOGS' | 'FACTORY_RESET' | 'RESTORE_SNAP' | null;
+
+export const DataManagementPanel: React.FC<DataManagementPanelProps> = ({ onDataRestored }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [stats, setStats] = useState({ totalMov: 0, totalLogs: 0, totalModels: 0 });
+  const [snapshots, setSnapshots] = useState<SnapshotMetadata[]>([]);
+
+  const [config, setConfig] = useState<BackupConfig>(() => {
+    const saved = localStorage.getItem('cgb_backup_config');
+    return saved ? JSON.parse(saved) : { autoEnabled: true, frequency: 'WEEKLY' };
+  });
+
+  const [pendingAction, setPendingAction] = useState<MaintenanceAction>(null);
+  const [selectedSnapshotPath, setSelectedSnapshotPath] = useState<string | null>(null);
+  const [confirmText, setConfirmText] = useState('');
+  const CONFIRM_PHRASE = "CONFIRMAR";
+
+  useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  const loadInitialData = async () => {
+    setStats(getDatabaseStats());
+    const list = await listInternalSnapshots();
+    setSnapshots(list);
+  };
+
+  const refreshStats = async () => {
+    setStats(getDatabaseStats());
+    const list = await listInternalSnapshots();
+    setSnapshots(list);
+    onDataRestored();
+  };
+
+  useEffect(() => {
+    localStorage.setItem('cgb_backup_config', JSON.stringify(config));
+  }, [config]);
+
+  const handleBackup = async () => {
+    setIsProcessing(true);
+    await generateBackup();
+    setIsProcessing(false);
+  };
+
+  const handleRestoreClick = () => fileInputRef.current?.click();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (confirm('A restauração irá substituir todos os dados atuais. Deseja continuar?')) {
+      setIsProcessing(true);
+      try {
+        const success = await restoreBackup(file);
+        if (success) {
+          alert('Dados restaurados com sucesso!');
+          refreshStats();
+        } else {
+          alert('Falha ao restaurar dados.');
+        }
+      } catch (err) {
+        alert('Erro durante a restauração.');
+      } finally {
+        setIsProcessing(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleCreateSnapshot = async () => {
+    const name = window.prompt("Dê um nome para este ponto de restauração:", `Backup Manual ${new Date().toLocaleDateString()}`);
+    if (name === null) return;
+
+    setIsProcessing(true);
+    await saveInternalSnapshot(name || 'Ponto sem nome');
+    await refreshStats();
+    setIsProcessing(false);
+  };
+
+  const handleRestoreSnapshotClick = (path: string) => {
+    setSelectedSnapshotPath(path);
+    setPendingAction('RESTORE_SNAP');
+  };
+
+  const executeAction = async () => {
+    if (confirmText !== CONFIRM_PHRASE) return;
+
+    setIsProcessing(true);
+    if (pendingAction === 'CLEAR_MOV') clearMovimentacoes();
+    else if (pendingAction === 'CLEAR_LOGS') clearLogs();
+    else if (pendingAction === 'FACTORY_RESET') clearAllData();
+    else if (pendingAction === 'RESTORE_SNAP' && selectedSnapshotPath) {
+      await restoreFromSnapshot(selectedSnapshotPath);
+    }
+
+    setTimeout(() => {
+      setIsProcessing(false);
+      setPendingAction(null);
+      setConfirmText('');
+      setSelectedSnapshotPath(null);
+      refreshStats();
+      alert('Operação concluída com sucesso!');
+    }, 500);
+  };
+
+  const handleDeleteSnap = async (path: string) => {
+    if (confirm('Excluir este ponto de restauração permanentemente?')) {
+      await deleteSnapshot(path);
+      const list = await listInternalSnapshots();
+      setSnapshots(list);
+    }
+  };
+
+  return (
+    <div className="space-y-6 mt-8">
+      {/* Security Modal Overlay */}
+      {pendingAction && (
+        <div className="fixed inset-0 z-[3000] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white rounded-[32px] p-8 w-[92%] max-w-sm border-4 border-rose-500 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200">
+            <div className="text-center space-y-2">
+              <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                <ShieldAlert className="w-10 h-10 animate-pulse" />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Ação de Segurança</h3>
+              <p className="text-xs text-slate-500 font-medium leading-relaxed px-2">
+                {pendingAction === 'RESTORE_SNAP' ?
+                  'A restauração irá substituir todos os dados atuais pelos salvos neste ponto.' :
+                  `Você vai apagar registros permanentes do sistema. Esta ação não tem volta.`
+                }
+              </p>
+            </div>
+
+            <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+              <label className="block text-[10px] font-black text-slate-400 uppercase text-center tracking-[0.2em]">
+                Digite <span className="text-rose-600">CONFIRMAR</span> para prosseguir
+              </label>
+              <input
+                type="text"
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value.toUpperCase())}
+                placeholder="..."
+                className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-center font-black text-sky-950 focus:border-rose-500 outline-none transition-all uppercase"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              <button
+                onClick={executeAction}
+                disabled={confirmText !== CONFIRM_PHRASE || isProcessing}
+                className="w-full py-4 bg-rose-600 disabled:bg-slate-200 text-white font-black text-sm rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2"
+              >
+                {isProcessing ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ShieldCheck className="w-5 h-5" />}
+                Confirmar Agora
+              </button>
+              <button
+                onClick={() => setPendingAction(null)}
+                className="w-full py-3.5 bg-slate-100 text-slate-500 font-black text-xs rounded-2xl"
+              >
+                VOLTAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1. BACKUP EXTERNO (NUVEM/DRIVE) */}
+      <div className="bg-white rounded-3xl border-2 border-slate-100 overflow-hidden shadow-sm">
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-sky-600 text-white rounded-xl">
+              <CloudUpload className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-black text-slate-800 text-sm uppercase tracking-tight">Arquivos Externos (Drive / Cloud)</h3>
+              <p className="text-[10px] text-slate-500 font-bold uppercase">Exportação e importação manual</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button
+              onClick={handleBackup}
+              disabled={isProcessing}
+              className="flex items-center justify-between p-5 bg-white border-2 border-sky-100 hover:border-sky-600 rounded-[24px] transition-all active:scale-95 group shadow-xs"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-sky-600 text-white rounded-2xl shadow-lg group-hover:scale-110 transition-transform">
+                  <CloudUpload className="w-6 h-6" />
+                </div>
+                <div className="text-left">
+                  <span className="block text-sm font-black text-slate-800 uppercase">Exportar para Nuvem</span>
+                  <span className="block text-[10px] text-slate-500 font-medium">Google Drive, WhatsApp ou Email</span>
+                </div>
+              </div>
+              <Share2 className="w-5 h-5 text-sky-300 group-hover:text-sky-600" />
+            </button>
+
+            <button
+              onClick={handleRestoreClick}
+              disabled={isProcessing}
+              className="flex items-center justify-between p-5 bg-white border-2 border-amber-100 hover:border-amber-600 rounded-[24px] transition-all active:scale-95 group shadow-xs"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-amber-500 text-white rounded-2xl shadow-lg group-hover:scale-110 transition-transform">
+                  <CloudDownload className="w-6 h-6" />
+                </div>
+                <div className="text-left">
+                  <span className="block text-sm font-black text-slate-800 uppercase">Importar do Celular</span>
+                  <span className="block text-[10px] text-slate-500 font-medium">Restaurar arquivo .json externo</span>
+                </div>
+              </div>
+              <Upload className="w-5 h-5 text-amber-300 group-hover:text-amber-600" />
+            </button>
+            <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
+        </div>
+      </div>
+
+      {/* 2. PONTOS DE RESTAURAÇÃO INTERNOS */}
+      <div className="bg-white rounded-3xl border-2 border-slate-100 overflow-hidden shadow-sm">
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-amber-400 text-sky-950 rounded-xl">
+              <History className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-black text-slate-800 text-sm uppercase tracking-tight">Máquina do Tempo (Interno)</h3>
+              <p className="text-[10px] text-slate-500 font-bold uppercase">Restaurar base para estado anterior</p>
+            </div>
+          </div>
+          <button
+            onClick={handleCreateSnapshot}
+            className="p-2 bg-sky-900 text-white rounded-xl hover:bg-sky-800 active:scale-95 transition-all shadow-sm"
+          >
+            <PlusCircle className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-4 sm:p-6 max-h-[400px] overflow-y-auto">
+          {snapshots.length === 0 ? (
+            <div className="text-center py-10 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 text-slate-400 font-bold uppercase text-[10px]">
+               Sem pontos salvos no dispositivo
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {snapshots.map((snap) => (
+                <div key={snap.path} className="flex items-center justify-between p-4 bg-white border-2 border-slate-50 rounded-2xl shadow-xs hover:border-sky-300 transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl ${snap.isAuto ? 'bg-slate-100 text-slate-400' : 'bg-sky-50 text-sky-600'}`}>
+                      {snap.isAuto ? <RefreshCw className="w-4 h-4" /> : <FileJson className="w-4 h-4" />}
+                    </div>
+                    <div>
+                      <span className="block text-[11px] font-black text-slate-800 uppercase leading-tight">{snap.name}</span>
+                      <span className="block text-[9px] text-slate-400 font-mono mt-0.5">{new Date(snap.timestamp).toLocaleString('pt-BR')}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleRestoreSnapshotClick(snap.path)}
+                      className="px-3 py-1.5 bg-sky-50 text-sky-700 rounded-lg text-[9px] font-black uppercase hover:bg-sky-600 hover:text-white transition-all"
+                    >
+                      Voltar
+                    </button>
+                    <button onClick={() => handleDeleteSnap(snap.path)} className="p-1.5 text-slate-300 hover:text-rose-600 transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 3. LIMPEZA SELETIVA */}
+      <div className="bg-white rounded-3xl border-2 border-slate-100 overflow-hidden shadow-sm">
+        <div className="bg-rose-50/50 px-6 py-4 border-b border-rose-100 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-rose-600 text-white rounded-xl">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-black text-slate-800 text-sm uppercase tracking-tight text-rose-900">Limpeza e Manutenção</h3>
+              <p className="text-[10px] text-rose-600 font-bold uppercase">Remoção definitiva de registros</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+           <button
+              onClick={() => setPendingAction('CLEAR_MOV')}
+              className="flex items-center gap-3 p-4 bg-white border-2 border-slate-100 hover:border-rose-400 rounded-2xl transition-all active:scale-95 group shadow-xs"
+            >
+              <div className="p-2 bg-rose-50 text-rose-500 rounded-xl group-hover:bg-rose-500 group-hover:text-white transition-colors"><Database className="w-5 h-5" /></div>
+              <div className="text-left">
+                <span className="block text-xs font-black text-slate-700 uppercase">Limpar Pousos</span>
+                <span className="block text-[9px] text-slate-400 font-bold uppercase">{stats.totalMov} Itens</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setPendingAction('CLEAR_LOGS')}
+              className="flex items-center gap-3 p-4 bg-white border-2 border-slate-100 hover:border-rose-400 rounded-2xl transition-all active:scale-95 group shadow-xs"
+            >
+              <div className="p-2 bg-rose-50 text-rose-500 rounded-xl group-hover:bg-rose-500 group-hover:text-white transition-colors"><ShieldAlert className="w-5 h-5" /></div>
+              <div className="text-left">
+                <span className="block text-xs font-black text-slate-700 uppercase">Limpar Logs</span>
+                <span className="block text-[9px] text-slate-400 font-bold uppercase">{stats.totalLogs} Itens</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setPendingAction('FACTORY_RESET')}
+              className="flex items-center justify-center gap-3 p-4 bg-rose-600 text-white rounded-2xl transition-all hover:bg-rose-700 shadow-lg active:scale-95 font-black text-xs uppercase tracking-widest"
+            >
+              <RefreshCw className="w-5 h-5" />
+              Reset Total
+            </button>
+        </div>
+      </div>
+    </div>
+  );
+};

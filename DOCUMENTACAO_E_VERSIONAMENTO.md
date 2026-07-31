@@ -2,8 +2,8 @@
 
 **Sistema:** Dashboard Executivo e Operacional de Movimentações de Aeronaves  
 **Aeroporto:** Aeroporto Internacional de Cuiabá / Marechal Rondon (CGB - SBCY)  
-**Versão Atual:** `v1.1.1`  
-**Data:** 29 de Julho de 2026  
+**Versão Atual:** `v1.1.2`  
+**Data:** 30 de Julho de 2026  
 **Linguagem & Frameworks:** React 19, TypeScript, Tailwind CSS v4, Recharts, Lucide Icons  
 
 ---
@@ -61,6 +61,20 @@ O layout adota o tema **Clean/Light - Technical Dashboard / Data Grid**:
 ---
 
 ## 5. Historico de Versões e Versionamento
+
+### Versão 1.1.2 — (30/07/2026)
+- **Central de Segurança & Backup:** Criação de uma nova tela independente para gestão de dados e resiliência do sistema.
+- **Backups Externos (Nuvem/Drive):** Implementada exportação física em JSON e importação de fontes externas (Google Drive, WhatsApp, etc.) via seletor nativo.
+- **Máquina do Tempo (Snapshots):** Sistema de pontos de restauração internos no celular, permitindo "voltar no tempo" sem arquivos externos.
+- **Backup Automático Inteligente:** Lógica para disparar snapshots automáticos ao abrir o app (Diário, Semanal, Quinzenal ou Mensal).
+- **Business Intelligence (BI) Avançado:**
+    - Novo gráfico de **Performance Operacional** (Linhas) para tendências temporais.
+    - Market Share multi-modo: alternância entre Pizza, Barras e Lista de Performance.
+    - Limitação para as **Top 5 Companhias** e inclusão obrigatória de legendas.
+- **Limpeza Granular de Base:** Opções para apagar Pousos ou Logs separadamente, ou Reset de Fábrica Total.
+- **Trava de Segurança "CONFIRMAR":** Implementação de confirmação via digitação obrigatória para evitar exclusões acidentais.
+- **Reorganização de Fluxo:** Botão de Administração movido para a última posição da Home para foco operacional.
+- **Correção de UI Crítica:** Resolvido o erro de janelas de confirmação cortadas lateralmente no Android (Galaxy S8).
 
 ### Versão 1.1.1 — (29/07/2026)
 - **Gestão de Modelos de Aeronave:** Adicionado campo "Modelo/Equipamento" opcional no fluxo de cadastro de pátio.

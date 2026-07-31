@@ -1,6 +1,26 @@
 @import "tailwindcss";
 
 @layer base {
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y;
+  }
+
+  #root {
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden !important;
+  }
+
   /* Resets para evitar conflitos com html2canvas e oklch */
   .printable-content,
   .printable-content * {

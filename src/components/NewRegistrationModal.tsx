@@ -96,12 +96,12 @@ export const NewRegistrationModal: React.FC<NewRegistrationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="relative bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-0 m-0 w-screen h-screen left-0 top-0 bg-slate-900/60 backdrop-blur-xs">
+      <div className="relative bg-white rounded-[32px] border border-slate-300 shadow-2xl w-[92%] max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col mx-auto">
         {/* Save Confirmation Dialog Overlay */}
         {confirmingSave && (
-          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs z-30 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl p-5 max-w-sm w-full border-2 border-sky-600 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-30 flex items-center justify-center p-4 w-full h-full left-0 top-0">
+            <div className="bg-white rounded-[32px] p-8 w-[90%] max-w-[340px] border-2 border-sky-600 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200 mx-auto">
               <div className="text-center space-y-1">
                 <div className="w-12 h-12 bg-sky-100 text-sky-800 rounded-full flex items-center justify-center mx-auto mb-2">
                   <Save className="w-6 h-6" />
@@ -141,20 +141,20 @@ export const NewRegistrationModal: React.FC<NewRegistrationModalProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setConfirmingSave(false)}
-                  className="py-2.5 px-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-xs rounded-xl border border-slate-300 transition-all cursor-pointer text-center"
-                >
-                  Voltar
-                </button>
+              <div className="grid grid-cols-1 gap-3 pt-2">
                 <button
                   type="button"
                   onClick={handleFinalConfirmSave}
-                  className="py-2.5 px-3 bg-sky-700 hover:bg-sky-800 text-white font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer text-center active:scale-95"
+                  className="py-4 px-4 bg-sky-700 hover:bg-sky-800 text-white font-black text-sm rounded-2xl shadow-lg transition-all cursor-pointer text-center active:scale-95 uppercase tracking-widest"
                 >
-                  Sim, Confirmar
+                  Confirmar e Salvar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingSave(false)}
+                  className="py-3.5 px-4 bg-slate-100 text-slate-500 font-black text-xs rounded-2xl border border-slate-200 transition-all cursor-pointer text-center active:bg-slate-200"
+                >
+                  Voltar
                 </button>
               </div>
             </div>

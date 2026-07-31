@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { AuditLog } from '../types';
 import { Database, Search, ShieldCheck, AlertOctagon, Info, AlertTriangle, Trash2, Download, RefreshCw, Smartphone, Monitor } from 'lucide-react';
+import { exportToCSV } from '../services/dataManagementService';
 
 interface SystemLogViewerProps {
   logs: AuditLog[];
-  onClearLogs: () => void;
-  onRefreshLogs: () => void;
 }
 
 export const SystemLogViewer: React.FC<SystemLogViewerProps> = ({
   logs,
-  onClearLogs,
-  onRefreshLogs,
 }) => {
   const [filterType, setFilterType] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -61,7 +58,7 @@ export const SystemLogViewer: React.FC<SystemLogViewerProps> = ({
     }
   };
 
-  const handleExportLogsCSV = () => {
+  const handleExportLogsCSV = async () => {
     const headers = ['ID Log', 'Data/Hora', 'Tipo', 'Nível', 'Origem', 'Dispositivo/Operador', 'Descrição', 'Detalhes', 'Matrícula'];
     const rows = filteredLogs.map((log) => [
       log.id,
@@ -75,14 +72,7 @@ export const SystemLogViewer: React.FC<SystemLogViewerProps> = ({
       log.matriculaAeronave || ''
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `logs_auditoria_cgb_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    await exportToCSV('logs_auditoria_cgb', headers, rows);
   };
 
   return (
@@ -108,34 +98,12 @@ export const SystemLogViewer: React.FC<SystemLogViewerProps> = ({
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <button
-            onClick={onRefreshLogs}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-1.5 cursor-pointer transition-colors"
-            title="Atualizar Logs"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
-            <span className="hidden xs:inline">Atualizar</span>
-          </button>
-
-          <button
             onClick={handleExportLogsCSV}
             className="px-3 py-1.5 bg-sky-800 hover:bg-sky-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
             title="Exportar CSV de Logs"
           >
             <Download className="w-3.5 h-3.5 text-sky-200" />
             <span>Exportar CSV</span>
-          </button>
-
-          <button
-            onClick={() => {
-              if (confirm('Tem certeza de que deseja limpar o histórico de logs de auditoria do sistema?')) {
-                onClearLogs();
-              }
-            }}
-            className="px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 text-rose-200 text-xs font-bold rounded-xl border border-rose-800 flex items-center gap-1.5 cursor-pointer transition-colors"
-            title="Limpar Logs"
-          >
-            <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-            <span className="hidden xs:inline">Limpar</span>
           </button>
         </div>
       </div>

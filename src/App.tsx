@@ -11,18 +11,20 @@ import { DocumentationModal } from './components/DocumentationModal';
 import { ExportModal } from './components/ExportModal';
 import { ConfirmDeleteModal } from './components/ConfirmDeleteModal';
 import { SystemLogViewer } from './components/SystemLogViewer';
+import { DataManagementPanel } from './components/DataManagementPanel';
 import { DailyOperationalReport, ManagementReport, ShiftHandoverReport, AirlineSpecificReport } from './components/ReportTemplates';
+import { checkAndRunAutoBackup } from './services/dataManagementService';
 
 import { LISTA_COMPANHIAS, MOCK_MOVIMENTACOES } from './data/mockData';
 import { MovimentacaoAeronave, FiltrosDashboard, StatSummary, AuditLog } from './types';
 import { getAuditLogs, addAuditLog, clearAuditLogs } from './services/auditLogService';
-import { Smartphone, ListOrdered, BarChart3, ChevronRight, Plane, Download, LogOut } from 'lucide-react';
+import { Smartphone, ListOrdered, BarChart3, ChevronRight, Plane, Download, LogOut, ShieldCheck } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 
 const STORAGE_KEY = 'cgb_movimentacoes_data_v1';
 
-type ActiveScreen = 'home' | 'cadastro' | 'pousos' | 'relatorios' | 'exportar';
+type ActiveScreen = 'home' | 'cadastro' | 'pousos' | 'relatorios' | 'exportar' | 'seguranca';
 
 export default function App() {
   // Navigation Screen State: Default initial landing screen is 'home'
@@ -65,6 +67,16 @@ export default function App() {
       console.error('Erro ao salvar no localStorage', err);
     }
   }, [movimentacoes]);
+
+  // Handle auto-backup check on start
+  useEffect(() => {
+    const runCheck = async () => {
+      const savedConfig = localStorage.getItem('cgb_backup_config');
+      const config = savedConfig ? JSON.parse(savedConfig) : { autoEnabled: true, frequency: 'WEEKLY' };
+      await checkAndRunAutoBackup(config);
+    };
+    runCheck();
+  }, []);
 
   // Logic: Computed values must come before states that depend on them
 
@@ -333,6 +345,25 @@ export default function App() {
     setIsNewModalOpen(true);
   };
 
+  const handleRefreshData = () => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setMovimentacoes(JSON.parse(saved));
+      } catch (err) {
+        console.error('Erro ao recarregar dados', err);
+        setMovimentacoes([]);
+      }
+    } else {
+      // Se não há dados salvos (após limpeza), deixa a lista vazia em vez de restaurar o mock
+      setMovimentacoes([]);
+    }
+
+    // Recarrega logs e volta para a Home
+    setAuditLogs(getAuditLogs());
+    setActiveScreen('home');
+  };
+
   // Handler to exit the app with confirmation
   const handleExitApp = async () => {
     const confirmExit = window.confirm("Deseja realmente sair do aplicativo?");
@@ -446,28 +477,7 @@ export default function App() {
                   <ChevronRight className="w-5 h-5 text-amber-600 group-hover:translate-x-1 transition-transform shrink-0" />
                 </button>
 
-                {/* Option 3: Administrador */}
-                <button
-                  onClick={() => setActiveScreen('relatorios')}
-                  className="group p-4 bg-white hover:bg-slate-100 rounded-2xl border-2 border-slate-300 hover:border-slate-400 shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-between gap-4 text-left active:scale-98"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <div className="p-3 bg-slate-800 text-sky-300 rounded-xl group-hover:scale-110 transition-transform shrink-0 shadow-sm">
-                      <BarChart3 className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h2 className="font-extrabold text-slate-900 text-base sm:text-lg whitespace-nowrap">
-                        Administrador
-                      </h2>
-                      <p className="text-xs text-slate-500 font-medium whitespace-nowrap">
-                        Relatórios, BI e auditoria
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-slate-500 group-hover:translate-x-1 transition-transform shrink-0" />
-                </button>
-
-                {/* Option 4: Exportar (PDF/CSV) */}
+                {/* Option 3: Relatórios (PDF/CSV) */}
                 <button
                   onClick={() => handleOpenExport()}
                   className="group p-4 bg-white hover:bg-emerald-50 rounded-2xl border-2 border-emerald-500/30 hover:border-emerald-500 shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-between gap-4 text-left active:scale-98"
@@ -486,6 +496,27 @@ export default function App() {
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-emerald-600 group-hover:translate-x-1 transition-transform shrink-0" />
+                </button>
+
+                {/* Option 4: Segurança & Backup */}
+                <button
+                  onClick={() => setActiveScreen('seguranca')}
+                  className="group p-4 bg-white hover:bg-sky-50 rounded-2xl border-2 border-sky-500/30 hover:border-sky-500 shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-between gap-4 text-left active:scale-98"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-3 bg-sky-700 text-white rounded-xl group-hover:scale-110 transition-transform shrink-0 shadow-sm">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="font-extrabold text-slate-900 text-base sm:text-lg whitespace-nowrap">
+                        Segurança & Backup
+                      </h2>
+                      <p className="text-xs text-slate-500 font-medium whitespace-nowrap">
+                        Salvar e restaurar dados locais
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-sky-600 group-hover:translate-x-1 transition-transform shrink-0" />
                 </button>
 
                 {/* Option 5: Sair do App (Apenas Native) */}
@@ -510,6 +541,27 @@ export default function App() {
                     <ChevronRight className="w-5 h-5 text-rose-600 group-hover:translate-x-1 transition-transform shrink-0" />
                   </button>
                 )}
+
+                {/* Option 5: Administração (Sempre por último) */}
+                <button
+                  onClick={() => setActiveScreen('relatorios')}
+                  className="group p-4 bg-white hover:bg-slate-100 rounded-2xl border-2 border-slate-300 hover:border-slate-400 shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-between gap-4 text-left active:scale-98"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-3 bg-slate-800 text-sky-300 rounded-xl group-hover:scale-110 transition-transform shrink-0 shadow-sm">
+                      <BarChart3 className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="font-extrabold text-slate-900 text-base sm:text-lg whitespace-nowrap">
+                        Administração
+                      </h2>
+                      <p className="text-xs text-slate-500 font-medium whitespace-nowrap">
+                        Relatórios, BI e auditoria
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-slate-500 group-hover:translate-x-1 transition-transform shrink-0" />
+                </button>
               </div>
             </div>
           </div>
@@ -566,8 +618,6 @@ export default function App() {
             {/* System Log Database & Maintenance Viewer */}
             <SystemLogViewer
               logs={auditLogs}
-              onClearLogs={handleClearLogs}
-              onRefreshLogs={handleRefreshLogs}
             />
           </div>
         )}
@@ -588,6 +638,11 @@ export default function App() {
             companhias={LISTA_COMPANHIAS}
             autoTriggerMode={autoReportMode}
           />
+        )}
+
+        {/* TELA DE SEGURANÇA E BACKUP (NEW) */}
+        {activeScreen === 'seguranca' && (
+          <DataManagementPanel onDataRestored={handleRefreshData} />
         )}
       </main>
 
