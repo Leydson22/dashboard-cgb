@@ -3,7 +3,7 @@
 **Sistema:** Dashboard Executivo e Operacional de Movimentações de Aeronaves  
 **Aeroporto:** Aeroporto Internacional de Cuiabá / Marechal Rondon (CGB - SBCY)  
 **Versão Atual:** `v1.1.2`  
-**Data:** 30 de Julho de 2026  
+**Data:** 03 de Agosto de 2026  
 **Linguagem & Frameworks:** React 19, TypeScript, Tailwind CSS v4, Recharts, Lucide Icons  
 
 ---
@@ -69,12 +69,19 @@ O layout adota o tema **Clean/Light - Technical Dashboard / Data Grid**:
 - **Backup Automático Inteligente:** Lógica para disparar snapshots automáticos ao abrir o app (Diário, Semanal, Quinzenal ou Mensal).
 - **Business Intelligence (BI) Avançado:**
     - Novo gráfico de **Performance Operacional** (Linhas) para tendências temporais.
-    - Market Share multi-modo: alternância entre Pizza, Barras e Lista de Performance.
-    - Limitação para as **Top 5 Companhias** e inclusão obrigatória de legendas.
-- **Limpeza Granular de Base:** Opções para apagar Pousos ou Logs separadamente, ou Reset de Fábrica Total.
+    - Market Share multi-modo: alternância entre Pizza (com legendas), Barras e Lista de Performance.
+    - Filtro inteligente: Exibição limitada às **Top 5 Companhias** para clareza gerencial.
+- **Limpeza Granular de Base:** Opções independentes para apagar Pousos ou Logs, ou Reset de Fábrica Total.
 - **Trava de Segurança "CONFIRMAR":** Implementação de confirmação via digitação obrigatória para evitar exclusões acidentais.
 - **Reorganização de Fluxo:** Botão de Administração movido para a última posição da Home para foco operacional.
-- **Correção de UI Crítica:** Resolvido o erro de janelas de confirmação cortadas lateralmente no Android (Galaxy S8).
+- **Correção de UI Crítica:** 
+    - Janelas de confirmação agora centralizadas com largura adaptativa para Samsung Galaxy (S8 até A54).
+    - Travamento de rolagem horizontal (overflow-x) em todo o sistema.
+    - Redução de espaços em branco e ajuste de margens nos relatórios PDF de Passagem de Turno.
+- **Melhorias de Experiência e Segurança:**
+    - Botão "Sair" movido para a última posição na tela inicial.
+    - Implementada salvaguarda de dados: O sistema agora pergunta se o usuário deseja criar um ponto de restauração (Snaphot) antes de fechar o aplicativo.
+    - Nome de backup sugerido automaticamente com data e hora para facilitar a gestão.
 
 ### Versão 1.1.1 — (29/07/2026)
 - **Gestão de Modelos de Aeronave:** Adicionado campo "Modelo/Equipamento" opcional no fluxo de cadastro de pátio.

@@ -87,11 +87,14 @@ export const DataManagementPanel: React.FC<DataManagementPanelProps> = ({ onData
   };
 
   const handleCreateSnapshot = async () => {
-    const name = window.prompt("Dê um nome para este ponto de restauração:", `Backup Manual ${new Date().toLocaleDateString()}`);
+    const now = new Date();
+    const defaultName = `Backup ${now.toLocaleDateString('pt-BR')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    const name = window.prompt("Dê um nome para este ponto de restauração:", defaultName);
     if (name === null) return;
 
     setIsProcessing(true);
-    await saveInternalSnapshot(name || 'Ponto sem nome');
+    await saveInternalSnapshot(name || defaultName);
     await refreshStats();
     setIsProcessing(false);
   };

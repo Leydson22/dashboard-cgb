@@ -37,7 +37,7 @@ const ReportHeader: React.FC<{ title: string; subtitle?: string; periodo?: strin
 );
 
 const ReportFooter: React.FC = () => (
-  <div style={{ marginTop: '48px', paddingTop: '16px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '9px', color: '#94a3b8', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+  <div style={{ marginTop: '24px', paddingTop: '12px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '9px', color: '#94a3b8', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
     <span>© {new Date().getFullYear()} Centro-Oeste Airports (COA) - Área de Operações</span>
     <span>Página 1 de 1</span>
   </div>
@@ -308,8 +308,8 @@ export const ShiftHandoverReport: React.FC<ReportProps> = ({ movimentacoes, stat
         subtitle="Resumo de Atividades Operacionais"
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div style={{ border: '1px solid #e2e8f0', padding: '16px', borderRadius: '12px', backgroundColor: '#f8fafc' }}>
             <h3 style={{ fontSize: '10px', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', marginBottom: '12px' }}>Resumo do Período</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -364,20 +364,19 @@ export const ShiftHandoverReport: React.FC<ReportProps> = ({ movimentacoes, stat
           </table>
         </section>
 
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
-          <div style={{ border: '2px solid #f1f5f9', padding: '24px', borderRadius: '16px', height: '192px', position: 'relative', backgroundColor: '#f8fafc' }}>
+        <section style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+          <div style={{ border: '2px solid #f1f5f9', padding: '20px', borderRadius: '16px', height: '140px', position: 'relative', backgroundColor: '#f8fafc' }}>
             <h3 style={{ fontSize: '10px', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', position: 'absolute', top: '-8px', left: '16px', backgroundColor: '#ffffff', padding: '0 8px' }}>
               Pendências e Alertas para o Próximo Turno
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ width: '100%', borderBottom: '1px solid #e2e8f0', height: '24px' }}></div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ width: '100%', borderBottom: '1px solid #e2e8f0', height: '24px' }}></div>
               <div style={{ width: '100%', borderBottom: '1px solid #e2e8f0', height: '24px' }}></div>
             </div>
           </div>
         </section>
 
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginTop: '40px' }}>
+        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginTop: '24px' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ borderTop: '1px solid #94a3b8', paddingTop: '8px' }}>
               <p style={{ fontSize: '10px', fontWeight: '900', color: '#1e293b', textTransform: 'uppercase' }}>Agente Saindo</p>

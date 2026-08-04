@@ -13,7 +13,7 @@ import { ConfirmDeleteModal } from './components/ConfirmDeleteModal';
 import { SystemLogViewer } from './components/SystemLogViewer';
 import { DataManagementPanel } from './components/DataManagementPanel';
 import { DailyOperationalReport, ManagementReport, ShiftHandoverReport, AirlineSpecificReport } from './components/ReportTemplates';
-import { checkAndRunAutoBackup } from './services/dataManagementService';
+import { checkAndRunAutoBackup, saveInternalSnapshot } from './services/dataManagementService';
 
 import { LISTA_COMPANHIAS, MOCK_MOVIMENTACOES } from './data/mockData';
 import { MovimentacaoAeronave, FiltrosDashboard, StatSummary, AuditLog } from './types';
@@ -368,6 +368,12 @@ export default function App() {
   const handleExitApp = async () => {
     const confirmExit = window.confirm("Deseja realmente sair do aplicativo?");
     if (confirmExit) {
+      const wantBackup = window.confirm("Deseja realizar um ponto de restauração (Máquina do Tempo) antes de fechar para garantir a segurança dos dados?");
+      if (wantBackup) {
+        const now = new Date();
+        const timestamp = `${now.toLocaleDateString('pt-BR')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        await saveInternalSnapshot(`Backup Preventivo ${timestamp}`);
+      }
       CapacitorApp.exitApp();
     }
   };
@@ -519,7 +525,28 @@ export default function App() {
                   <ChevronRight className="w-5 h-5 text-sky-600 group-hover:translate-x-1 transition-transform shrink-0" />
                 </button>
 
-                {/* Option 5: Sair do App (Apenas Native) */}
+                {/* Option 5: Administração (Sempre por último) */}
+                <button
+                  onClick={() => setActiveScreen('relatorios')}
+                  className="group p-4 bg-white hover:bg-slate-100 rounded-2xl border-2 border-slate-300 hover:border-slate-400 shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-between gap-4 text-left active:scale-98"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-3 bg-slate-800 text-sky-300 rounded-xl group-hover:scale-110 transition-transform shrink-0 shadow-sm">
+                      <BarChart3 className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="font-extrabold text-slate-900 text-base sm:text-lg whitespace-nowrap">
+                        Administração
+                      </h2>
+                      <p className="text-xs text-slate-500 font-medium whitespace-nowrap">
+                        Relatórios, BI e auditoria
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-slate-500 group-hover:translate-x-1 transition-transform shrink-0" />
+                </button>
+
+                {/* Option 6: Sair do App (Apenas Native - ÚLTIMO) */}
                 {Capacitor.isNativePlatform() && (
                   <button
                     onClick={handleExitApp}
@@ -541,27 +568,6 @@ export default function App() {
                     <ChevronRight className="w-5 h-5 text-rose-600 group-hover:translate-x-1 transition-transform shrink-0" />
                   </button>
                 )}
-
-                {/* Option 5: Administração (Sempre por último) */}
-                <button
-                  onClick={() => setActiveScreen('relatorios')}
-                  className="group p-4 bg-white hover:bg-slate-100 rounded-2xl border-2 border-slate-300 hover:border-slate-400 shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-between gap-4 text-left active:scale-98"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <div className="p-3 bg-slate-800 text-sky-300 rounded-xl group-hover:scale-110 transition-transform shrink-0 shadow-sm">
-                      <BarChart3 className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h2 className="font-extrabold text-slate-900 text-base sm:text-lg whitespace-nowrap">
-                        Administração
-                      </h2>
-                      <p className="text-xs text-slate-500 font-medium whitespace-nowrap">
-                        Relatórios, BI e auditoria
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-slate-500 group-hover:translate-x-1 transition-transform shrink-0" />
-                </button>
               </div>
             </div>
           </div>

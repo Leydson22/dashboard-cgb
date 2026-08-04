@@ -140,8 +140,16 @@ Para criar uma visão administrativa executiva de alta legibilidade, estruture a
 
 Para complementar a operação via AppSheet, foi desenvolvido um Dashboard em React 19 que permite visualização analítica profunda e geração de relatórios PDF profissionais.
 
-### 5.1 Funcionalidades Chave
-- **Sincronização Local:** Armazenamento resiliente de dados de movimentação.
-- **Exportação Nativa:** Geração de relatórios PDF (Operacional, BI, Turno) com compartilhamento direto via sistema operacional.
-- **Interface Otimizada:** Design responsivo focado em dispositivos de campo (ex: Galaxy S8) e centrais de controle.
-- **Segurança de Saída:** Botão de encerramento de sessão com confirmação.
+### 5.1 Arquitetura de Dados e Persistência
+O aplicativo utiliza uma estratégia de armazenamento híbrido para garantir performance e segurança:
+
+1.  **Camada de Operação (LocalStorage):** Os dados ativos (pousos do dia, logs recentes e modelos) são armazenados no `localStorage`. Isso permite acesso instantâneo sem dependência de rede.
+2.  **Camada de Segurança (Snapshots Internos):** Utiliza o `Capacitor Filesystem` para gravar arquivos físicos `.json` na pasta de documentos do sistema Android. Estes arquivos são permanentes e servem como pontos de restauração (Máquina do Tempo).
+3.  **Camada de Exportação (Arquivos Externos):** Permite a geração de backups totais em JSON e relatórios em CSV que podem ser salvos no **Google Drive**, enviados via WhatsApp ou E-mail para arquivamento anual.
+
+### 5.2 Funcionalidades Chave
+- **BI em Tempo Real:** Gráficos de performance (linhas), market share (pizza/barras) e volumetria híbrida.
+- **Exportação Nativa:** Gerador de PDFs otimizados para folha A4 com sanitização de CSS para evitar erros de renderização em dispositivos móveis.
+- **Gestão de Equipamentos:** Cadastro e personalização da lista de modelos de aeronaves com persistência local.
+- **Segurança Operacional:** Trava de segurança via teclado ("CONFIRMAR") para ações destrutivas e botão de saída nativa.
+- **Design Responsivo:** Interface unificada em tela cheia otimizada para a linha Samsung Galaxy (S8, A52, A53, A54) e navegadores desktop.
