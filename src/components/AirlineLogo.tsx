@@ -111,6 +111,16 @@ export const AirlineLogo: React.FC<AirlineLogoProps> = ({
     );
   }
 
+  // FORÇAS ARMADAS BRASILEIRAS (FAB)
+  if (code.includes('FAB') || code.includes('ARMADAS') || code.includes('FORÇAS')) {
+    return (
+      <div className={`flex items-center justify-center font-black rounded-lg px-2.5 py-1 bg-[#003366] text-[#fcd34d] tracking-tight shadow-xs border border-sky-950 ${sizeClasses[size]} ${className}`}>
+        <span className="mr-1 text-sm">🎖️</span>
+        <span>FAB</span>
+      </div>
+    );
+  }
+
   // Outros / Av. Geral
   if (code.includes('OUT') || code.includes('GERAL') || code.includes('OUTROS')) {
     return (

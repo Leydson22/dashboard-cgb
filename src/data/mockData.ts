@@ -15,6 +15,54 @@ export const LISTA_COMPANHIAS: CompanhiaAerea[] = [
 
 export const MOCK_MOVIMENTACOES: MovimentacaoAeronave[] = [
   {
+    id_registro: 'REG-2001',
+    matricula: 'PR-AZU',
+    id_companhia: 1,
+    nome_companhia: 'Azul',
+    desembarque_hibrido: 'Não',
+    posicao_patio: '03',
+    horario_cadastro: '10:45:00',
+    data_cadastro: '2026-08-09',
+    tipo_aeronave: 'Airbus A320neo',
+    status_edicao: 'Auditado'
+  },
+  {
+    id_registro: 'REG-2002',
+    matricula: 'PS-LAT',
+    id_companhia: 2,
+    nome_companhia: 'LATAM',
+    desembarque_hibrido: 'Sim',
+    posicao_patio: '05',
+    horario_cadastro: '09:30:00',
+    data_cadastro: '2026-08-09',
+    tipo_aeronave: 'Airbus A321',
+    status_edicao: 'Auditado'
+  },
+  {
+    id_registro: 'REG-2003',
+    matricula: 'PR-GOL',
+    id_companhia: 3,
+    nome_companhia: 'GOL',
+    desembarque_hibrido: 'Não',
+    posicao_patio: '01',
+    horario_cadastro: '08:15:00',
+    data_cadastro: '2026-08-09',
+    tipo_aeronave: 'Boeing 737-800',
+    status_edicao: 'Auditado'
+  },
+  {
+    id_registro: 'REG-2004',
+    matricula: 'PP-VOE',
+    id_companhia: 6,
+    nome_companhia: 'Voepass',
+    desembarque_hibrido: 'Sim',
+    posicao_patio: 'A08',
+    horario_cadastro: '07:00:00',
+    data_cadastro: '2026-08-09',
+    tipo_aeronave: 'ATR 72-600',
+    status_edicao: 'Auditado'
+  },
+  {
     id_registro: 'REG-1001',
     matricula: 'PR-YQD',
     id_companhia: 1,
@@ -22,56 +70,8 @@ export const MOCK_MOVIMENTACOES: MovimentacaoAeronave[] = [
     desembarque_hibrido: 'Não',
     posicao_patio: '03',
     horario_cadastro: '15:42:00',
-    data_cadastro: '2026-07-30',
+    data_cadastro: '2026-08-08',
     tipo_aeronave: 'Airbus A320neo',
-    status_edicao: 'Auditado'
-  },
-  {
-    id_registro: 'REG-1002',
-    matricula: 'PS-AEU',
-    id_companhia: 1,
-    nome_companhia: 'Azul',
-    desembarque_hibrido: 'Sim',
-    posicao_patio: 'A02',
-    horario_cadastro: '15:30:00',
-    data_cadastro: '2026-07-30',
-    tipo_aeronave: 'Embraer E195-E2',
-    status_edicao: 'Auditado'
-  },
-  {
-    id_registro: 'REG-1003',
-    matricula: 'PT-MSL',
-    id_companhia: 8,
-    nome_companhia: 'Modern Logistics',
-    desembarque_hibrido: 'Não',
-    posicao_patio: '12',
-    horario_cadastro: '15:15:00',
-    data_cadastro: '2026-07-30',
-    tipo_aeronave: 'Boeing 737-400F',
-    status_edicao: 'Auditado'
-  },
-  {
-    id_registro: 'REG-1004',
-    matricula: 'PR-GGL',
-    id_companhia: 3,
-    nome_companhia: 'GOL',
-    desembarque_hibrido: 'Não',
-    posicao_patio: '05',
-    horario_cadastro: '14:50:00',
-    data_cadastro: '2026-07-30',
-    tipo_aeronave: 'Boeing 737-800',
-    status_edicao: 'Auditado'
-  },
-  {
-    id_registro: 'REG-1005',
-    matricula: 'PT-MBU',
-    id_companhia: 2,
-    nome_companhia: 'LATAM',
-    desembarque_hibrido: 'Não',
-    posicao_patio: '01',
-    horario_cadastro: '14:20:00',
-    data_cadastro: '2026-07-30',
-    tipo_aeronave: 'Airbus A319',
     status_edicao: 'Auditado'
   },
   {
