@@ -152,9 +152,9 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
       console.log('Capturando canvas...');
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 1.5, // Reduzido de 2 para 1.5 para diminuir o tamanho do arquivo
         useCORS: true,
-        logging: true,
+        logging: false,
         backgroundColor: '#ffffff',
         width: 794,
         windowWidth: 794,
@@ -193,12 +193,18 @@ export const ExportModal: React.FC<ExportModalProps> = ({
       element.style.width = originalWidth;
 
       console.log('Canvas capturado. Gerando PDF...');
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      // Usar JPEG com qualidade 0.75 em vez de PNG para reduzir drasticamente o tamanho
+      const imgData = canvas.toDataURL('image/jpeg', 0.75);
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+        compress: true // Ativar compressão interna do PDF
+      });
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       const pdfBase64 = pdf.output('datauristring').split(',')[1];
 
       const fileName = `Relatorio_${mode}_${Date.now()}.pdf`;

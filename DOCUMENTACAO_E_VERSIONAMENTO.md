@@ -2,7 +2,7 @@
 
 **Sistema:** Dashboard Executivo e Operacional de Movimentações de Aeronaves  
 **Aeroporto:** Aeroporto Internacional de Cuiabá / Marechal Rondon (CGB - SBCY)  
-**Versão Atual:** `v1.3.0`  
+**Versão Atual:** `v1.3.1`  
 **Data:** 09 de Agosto de 2026  
 **Linguagem & Frameworks:** React 19, TypeScript, Tailwind CSS v4, Recharts, Lucide Icons  
 
@@ -62,7 +62,27 @@ O layout adota o tema **Clean/Light - Technical Dashboard / Data Grid**:
 
 ## 5. Historico de Versões e Versionamento
 
+### Versão 1.3.1 — (09/08/2026)
+- **Otimização de PDF:** Implementada compressão agressiva de arquivos PDF. 
+    - Mudança do formato de imagem de PNG para JPEG (qualidade 0.75).
+    - Redução do fator de escala do canvas de 2.0 para 1.5.
+    - Ativada compressão interna do motor jsPDF.
+    - Resultado esperado: Redução de até 70% no tamanho final dos arquivos para compartilhamento.
+
 ### Versão 1.3.0 — (09/08/2026)
+- **Gestão Total de Ativos:** Implementada capacidade de Adicionar, Editar e Excluir **Empresas Aéreas**, **Prefixos de Matrícula** e **Posições de Pátio** diretamente no fluxo de cadastro.
+- **Filtros de Período ISO 8601:** Adicionados atalhos inteligentes (Hoje, Semana, Mês) na Administração. O filtro "Semana" agora segue o padrão internacional (inicia na Segunda-feira).
+- **Inclusão da FAB:** Adicionada a "Forças Armadas Brasileiras" à lista oficial, com identidade visual dedicada.
+- **Refinamento de UX/UI:**
+    - Painel de filtros administrativo reorganizado em blocos lógicos para economia de espaço no mobile.
+    - Números de pátio agora usam um sistema de **Grid Simétrico** e centralizado, melhorando a experiência de toque.
+    - Exibição do número da versão no canto superior direito da Home.
+- **Correções de Estabilidade:**
+    - Resolvido erro de "Tela Branca" ao navegar para Pousos/Administração através da correção de importação de ícones e ordem de execução de estados.
+    - Ajuste de margens e espaços em branco no relatório PDF de Passagem de Turno para garantir encaixe perfeito em A4.
+- **Lógica de Filtro Aprimorada:** Seleção de período agora limpa automaticamente buscas por matrícula para evitar conflitos de exibição.
+
+### Versão 1.1.2 — (30/07/2026)
 - **Gestão Total de Ativos:** Implementada capacidade de Adicionar, Editar e Excluir **Empresas Aéreas**, **Prefixos de Matrícula** e **Posições de Pátio** diretamente no fluxo de cadastro.
 - **Filtros de Período ISO 8601:** Adicionados atalhos inteligentes (Hoje, Semana, Mês) na Administração. O filtro "Semana" agora segue o padrão internacional (inicia na Segunda-feira).
 - **Inclusão da FAB:** Adicionada a "Forças Armadas Brasileiras" à lista oficial, com identidade visual dedicada.
