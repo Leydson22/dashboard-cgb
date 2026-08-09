@@ -1,8 +1,8 @@
-# Patio System CGB - Dashboard de Operações
+# Gestão e Acompanhamento de Pátio - COA
 
 Sistema executivo e operacional para monitoramento de movimentações de aeronaves no **Aeroporto Internacional de Cuiabá (CGB - SBCY)**.
 
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.1.2-blue)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.3.1-blue)
 ![React](https://img.shields.io/badge/React-19-blue)
 ![Capacitor](https://img.shields.io/badge/Capacitor-6-emerald)
 

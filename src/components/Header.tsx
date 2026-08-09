@@ -2,8 +2,8 @@ import React from 'react';
 import { Plane, X } from 'lucide-react';
 
 interface HeaderProps {
-  activeScreen: 'home' | 'cadastro' | 'pousos' | 'relatorios' | 'exportar';
-  onNavigate: (screen: 'home' | 'cadastro' | 'pousos' | 'relatorios' | 'exportar') => void;
+  activeScreen: 'home' | 'cadastro' | 'pousos' | 'relatorios' | 'exportar' | 'seguranca';
+  onNavigate: (screen: 'home' | 'cadastro' | 'pousos' | 'relatorios' | 'exportar' | 'seguranca') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ activeScreen, onNavigate }) => {
@@ -17,6 +17,8 @@ export const Header: React.FC<HeaderProps> = ({ activeScreen, onNavigate }) => {
         return 'Administração';
       case 'exportar':
         return 'Relatórios';
+      case 'seguranca':
+        return 'Segurança';
       default:
         return '';
     }
@@ -26,29 +28,30 @@ export const Header: React.FC<HeaderProps> = ({ activeScreen, onNavigate }) => {
     <header className="bg-sky-950 text-white px-3 sm:px-6 py-3 shadow-md sticky top-0 z-30 border-b border-sky-900 w-full">
       <div className="flex items-center justify-between max-w-full mx-auto w-full">
         {/* Left: Brand logo / Home Link */}
-        <div className="flex items-center gap-2 min-w-[60px]">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => onNavigate('home')}
-            className="flex items-center gap-1.5 font-extrabold cursor-pointer hover:opacity-90 active:scale-95 transition-transform"
+            className="flex items-center gap-2 font-extrabold cursor-pointer hover:opacity-90 active:scale-95 transition-transform"
           >
             <div className="w-8 h-8 bg-amber-400 text-sky-950 rounded-lg flex items-center justify-center font-black shadow-xs shrink-0">
               <Plane className="w-5 h-5" />
             </div>
-            <span className="tracking-tight text-amber-300 font-black text-lg sm:text-xl whitespace-nowrap">
-              CGB
-            </span>
+            <div className="flex flex-col items-start leading-none">
+              <span className="tracking-tight text-amber-300 font-black text-xs sm:text-sm uppercase whitespace-nowrap">
+                Gestão e Acompanhamento de Pátio
+              </span>
+              <span className="text-[8px] font-black text-sky-300 uppercase tracking-widest mt-0.5">
+                Aeroporto de Cuiabá • v1.3.1
+              </span>
+            </div>
           </button>
         </div>
 
         {/* Center: Title */}
         <div className="flex-1 flex justify-center px-2 overflow-hidden">
-          {activeScreen !== 'home' ? (
-            <span className="tracking-tight text-amber-300 font-black text-sm sm:text-lg uppercase whitespace-nowrap overflow-hidden text-ellipsis">
+          {activeScreen !== 'home' && (
+            <span className="tracking-tight text-amber-300 font-black text-sm sm:text-lg uppercase whitespace-nowrap overflow-hidden text-ellipsis bg-sky-900/50 px-3 py-1 rounded-lg border border-sky-800">
               {getScreenTitle()}
-            </span>
-          ) : (
-            <span className="text-xs sm:text-sm font-semibold text-sky-300/80 whitespace-nowrap">
-              Sistema Operacional
             </span>
           )}
         </div>

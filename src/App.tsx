@@ -154,14 +154,8 @@ export default function App() {
 
       <main className={`flex-1 flex flex-col max-w-full w-full mx-auto overflow-x-hidden ${(activeScreen === 'exportar' || activeScreen === 'cadastro') ? 'p-0' : 'p-2 sm:p-6 space-y-6'}`}>
         {activeScreen === 'home' && (
-          <div className="flex-1 flex flex-col items-center justify-center my-auto py-8 relative">
-            <div className="absolute top-4 right-4 z-50">
-              <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest opacity-70">v1.1.2</span>
-            </div>
+          <div className="flex-1 flex flex-col items-center justify-center my-auto py-8">
             <div className="max-w-md w-full space-y-5 text-center px-4 text-nowrap">
-              <div className="w-16 h-16 bg-sky-950 text-amber-300 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg border-2 border-sky-800"><Plane className="w-8 h-8" /></div>
-              <h1 className="text-xl sm:text-2xl font-black text-sky-950 tracking-tight uppercase">Módulo Operacional</h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Aeroporto de Cuiabá (CGB)</p>
               <div className="grid grid-cols-1 gap-3">
                 <button onClick={() => setActiveScreen('cadastro')} className="group p-4 bg-white hover:bg-sky-50 rounded-2xl border-2 border-sky-100 hover:border-sky-600 shadow-sm transition-all flex items-center justify-between active:scale-98">
                   <div className="flex items-center gap-3.5"><div className="p-3 bg-sky-800 text-white rounded-xl shadow-md"><Smartphone className="w-6 h-6" /></div><div className="text-left"><h2 className="font-black text-sky-950 text-base uppercase">Pátio</h2><p className="text-[10px] text-slate-400 font-bold uppercase">Lançamento de Pouso</p></div></div>

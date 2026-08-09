@@ -1,4 +1,4 @@
-# Especificação Técnica do App: Sistema de Controle de Aeronaves CGB
+# Especificação Técnica do App: Gestão e Acompanhamento de Pátio - COA
 ## 📱 Arquitetura Low-Code & Banco de Dados Híbrido (SQLite ➔ Google Sheets ➔ Relacional)
 
 Este documento atua como o manual oficial de engenharia de software e blueprint para implementação do aplicativo no **Google AppSheet** (antigo AppSheet do ecossistema Google Workspace) integrado ao **Google Looker Studio** para relatórios e inteligência de negócios no Aeroporto Internacional de Cuiabá (CGB - SBCG).
