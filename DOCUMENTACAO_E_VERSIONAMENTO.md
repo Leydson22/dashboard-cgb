@@ -2,8 +2,8 @@
 
 **Sistema:** Gestão e Acompanhamento de Pátio - COA  
 **Aeroporto:** Aeroporto Internacional de Cuiabá / Marechal Rondon (CGB - SBCY)  
-**Versão Atual:** `v1.3.1`  
-**Data:** 09 de Agosto de 2026  
+**Versão Atual:** `v1.5.0`  
+**Data:** 13 de Agosto de 2026  
 **Linguagem & Frameworks:** React 19, TypeScript, Tailwind CSS v4, Recharts, Lucide Icons  
 
 ---
@@ -35,6 +35,13 @@ O sistema opera com três camadas de dados para garantir máxima resiliência:
 ---
 
 ## 4. Historico de Versões e Versionamento
+
+### Versão 1.5.0 — (13/08/2026)
+- **Integração Supabase (Cloud):** Início da migração para arquitetura Cloud Sync.
+- **Autenticação de Usuários:** Implementação de tela de Login e controle de acesso (Operador vs Administrador).
+- **Offline-First Sync:** Sistema de fila de sincronização para garantir funcionamento sem internet e envio automático de dados ao detectar conexão.
+- **Base de Dados Online:** Migração dos registros de LocalStorage para PostgreSQL (Supabase) com redundância local.
+- **Painel Administrativo Multiusuário:** Visualização consolidada de dados de toda a equipe de pátio.
 
 ### Versão 1.3.1 — (09/08/2026)
 - **Nova Identidade Visual:** Sistema renomeado para **"Gestão e Acompanhamento de Pátio - COA"**.
